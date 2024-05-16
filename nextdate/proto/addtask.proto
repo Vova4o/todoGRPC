@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package nextdate;
+
+option go_package = "github.com/Vova4o/todogrpc/nextdate/proto";
+
+message AddTaskRequest {
+    string date = 1;
+    string title = 2;
+    string comment = 3;
+    string repeat = 4;
+}
+
+message AddTaskResponse {
+    int64 id = 1;
+}
+
+service AddTaskToDBService {
+    rpc AddTask(AddTaskRequest) returns (AddTaskResponse);
+}
