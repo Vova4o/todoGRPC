@@ -21,15 +21,10 @@ import (
 
 type ServerConfig struct {
 	Addr    string
-	Handler *grpc.Server
-	DB      services.TaskService
-	// Storage *database.Storage
-	// Log     *logger.Logger
+	Handler *handles.Handlers
 }
 
-var Config *ServerConfig
-
-func NewApp() {
+func NewApp() *ServerConfig {
 	addr := config.Address()
 
 	db, err := database.New()
@@ -37,23 +32,13 @@ func NewApp() {
 		log.Fatal(err)
 	}
 
-	s := grpc.NewServer()
+	stor := database.NewStorage(db.Db)
+	serv := services.NewService(stor)
+	handles := handles.NewServer(serv)
 
-	pb.RegisterNextDateServiceServer(s, &handles.Server{DB: db})
-
-	Config = &ServerConfig{
+	return &ServerConfig{
 		Addr:    addr,
-		Handler: s,
-		DB:      db,
-		// Storage: storage,
-		// Log:     log,
-	}
-}
-
-func (c *ServerConfig) NewServer() *http.Server {
-	return &http.Server{
-		Addr:    c.Addr,
-		Handler: c.Handler,
+		Handler: handles,
 	}
 }
 
@@ -65,9 +50,17 @@ func (c *ServerConfig) StartServer() {
 			log.Fatalf("failed to listen: %v", err)
 		}
 
-		fmt.Printf("server listening at %v\n", lis.Addr())
+		if lis != nil {
+			fmt.Printf("server listening at %v\n", lis.Addr())
+		} else {
+			log.Fatalf("Listener is nil")
+		}
 
-		if err := c.Handler.Serve(lis); err != nil && err != http.ErrServerClosed {
+		s := grpc.NewServer()
+		pb.RegisterNextDateServiceServer(s, c.Handler)
+		pb.RegisterAddTaskToDBServiceServer(s, c.Handler)
+
+		if err := s.Serve(lis); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
 	}()
@@ -76,13 +69,13 @@ func (c *ServerConfig) StartServer() {
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
-	c.ShutdownServer(c.NewServer())
+	c.ShutdownServer()
 }
 
-func (c *ServerConfig) ShutdownServer(srv *http.Server) {
+func (c *ServerConfig) ShutdownServer() {
 	log.Println("Shutting down server...")
 
-	c.Handler.GracefulStop()
+	closed := c.Handler.Close()
 
-	log.Println("Server gracefully stopped")
+	log.Printf("Server gracefully stopped %v\n", closed)
 }

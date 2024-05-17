@@ -23,7 +23,9 @@ type Database struct {
 	Db *sql.DB
 }
 
-// var _ services.DB = &Database{}
+func NewStorage(db *sql.DB) *Database {
+	return &Database{Db: db}
+}
 
 // NewStorage создаёт новый объект Storage.
 func New() (*Database, error) {
@@ -108,28 +110,28 @@ func (s *Database) AddTaskDB(ctx context.Context, task *models.DBTask) (int64, e
 }
 
 // FindTask ищет задачу по идентификатору ID. Возвращает задачу или ошибку.
-func (s *Database) FindTask(id string) (models.DBTask, error) {
+func (s *Database) FindTask(ctx context.Context, id string) (*models.DBTask, error) {
 	task := models.DBTask{}
 	if id == "" {
-		return task, errors.New("не указан id задачи")
+		return &task, errors.New("не указан id задачи")
 	}
 
 	query := "SELECT id, date, title, comment, repeat FROM scheduler WHERE id = ?"
 	err := s.Db.QueryRow(query, id).Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return models.DBTask{}, errors.New("задача не найдена")
+			return &models.DBTask{}, errors.New("задача не найдена")
 		}
-		return models.DBTask{}, err
+		return &models.DBTask{}, err
 	}
 
-	return task, nil
+	return &task, nil
 }
 
 // UpdateTask обновляет задачу в базе данных. Возвращает ошибку.
-func (s *Database) UpdateTask(task models.DBTask) error {
+func (s *Database) UpdateTask(ctx context.Context, task *models.DBTask) error {
 	query := `UPDATE scheduler SET date = ?, title = ?, comment = ?, repeat = ? WHERE id = ?`
-	_, err := s.Db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
+	_, err := s.Db.Exec(query, &task.Date, &task.Title, &task.Comment, &task.Repeat, &task.ID)
 	if err != nil {
 		return errors.New("задача не найдена")
 	}
@@ -138,7 +140,7 @@ func (s *Database) UpdateTask(task models.DBTask) error {
 }
 
 // Tasks возвращает список задач из базы данных. Возвращает список задач или ошибку.
-func (s *Database) Tasks(offset int) ([]models.DBTask, error) {
+func (s *Database) Tasks(ctx context.Context, offset int) ([]models.DBTask, error) {
 	query := fmt.Sprintf("SELECT id, date, title, comment, repeat FROM scheduler ORDER BY date LIMIT %d OFFSET %d", limit, offset)
 	rows, err := s.Db.Query(query)
 	if err != nil {
@@ -163,7 +165,7 @@ func (s *Database) Tasks(offset int) ([]models.DBTask, error) {
 	return tasks, nil
 }
 
-func (s *Database) SearchTasks(search string) ([]models.DBTask, error) {
+func (s *Database) SearchTasks(ctx context.Context, search string) ([]models.DBTask, error) {
 	query := "SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ?"
 	rows, err := s.Db.Query(query, "%"+search+"%", "%"+search+"%")
 	if err != nil {
@@ -183,7 +185,7 @@ func (s *Database) SearchTasks(search string) ([]models.DBTask, error) {
 	return tasks, nil
 }
 
-func (s *Database) TasksByDate(date string) ([]models.DBTask, error) {
+func (s *Database) TasksByDate(ctx context.Context, date string) ([]models.DBTask, error) {
 	query := "SELECT id, date, title, comment, repeat FROM scheduler WHERE date = ?"
 	rows, err := s.Db.Query(query, date)
 	if err != nil {
@@ -204,7 +206,7 @@ func (s *Database) TasksByDate(date string) ([]models.DBTask, error) {
 }
 
 // DoneTask помечает задачу как выполненную. Возвращает ошибку. Если задача повторяющаяся, то создаёт новую задачу на следующую дату.
-func (s *Database) DoneTask(id string) error {
+func (s *Database) DoneTask(ctx context.Context, id string) error {
 	var taskWeDeleting models.DBTask
 	err := s.Db.QueryRow("SELECT id, date, title, comment, repeat FROM scheduler WHERE id = ?", id).Scan(&taskWeDeleting.ID, &taskWeDeleting.Date, &taskWeDeleting.Title, &taskWeDeleting.Comment, &taskWeDeleting.Repeat)
 	if err != nil {
@@ -221,7 +223,7 @@ func (s *Database) DoneTask(id string) error {
 		if err != nil {
 			return err
 		}
-		err = s.UpdateTask(taskWeDeleting)
+		err = s.UpdateTask(ctx, &taskWeDeleting)
 		if err != nil {
 			return err
 		}
@@ -231,7 +233,7 @@ func (s *Database) DoneTask(id string) error {
 }
 
 // DeleteTask удаляет задачу из базы данных. Возвращает ошибку.
-func (s *Database) DeleteTask(id string) error {
+func (s *Database) DeleteTask(ctx context.Context,id string) error {
 	var exists bool
 	err := s.Db.QueryRow("SELECT exists(SELECT 1 FROM scheduler WHERE id=?)", id).Scan(&exists)
 	if err != nil || !exists {

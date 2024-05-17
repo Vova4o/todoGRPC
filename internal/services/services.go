@@ -7,7 +7,7 @@ import (
 	"github.com/Vova4o/todogrpc/pkg/datecalc"
 )
 
-func NextDateRequest(nowRequest string, task models.DBTask) (string, error) {
+func (s *Service) NextDateRequest(nowRequest string, task models.DBTask) (string, error) {
 	// move to service module?
 	timeNow, err := time.Parse("20060102", nowRequest)
 	if err != nil {
