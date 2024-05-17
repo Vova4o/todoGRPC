@@ -11,6 +11,7 @@ type Handlers struct {
 	// вместо того чтобы впихивать по одному мы воткнули весь инерфейс Proto
 	pb.NextDateServiceServer
 	pb.AddTaskToDBServiceServer
+	pb.AllTasksServiceServer
 	// далее прикручиваем структуру слоя сервис к Serviser interface для его использования
 	serviceLevel Serviser
 }
@@ -19,7 +20,8 @@ type Handlers struct {
 type Serviser interface {
 	NextDateRequest(nowRequest string, task models.DBTask) (string, error)
 	AddTaskService(ctx context.Context, task *models.DBTask) (int64, error)
-	Close() (string)
+	AllTasksService(ctx context.Context, in string) ([]models.DBTask, error)
+	Close() string
 }
 
 // s *Handlers — это структура, которая включает в себя все методы из Proto и методы из Serviser

@@ -22,8 +22,14 @@ func main() {
 	defer conn.Close()
 
 	c := pb.NewNextDateServiceClient(conn)
+	a := pb.NewAddTaskToDBServiceClient(conn)
+	d := pb.NewAllTasksServiceClient(conn)
 
 	newDate := handles.NextDate(c)
+	handles.AddTask(a)
+	handles.AllTasks(d)
+	handles.AllTasksByName(d)
+	handles.AllTasksByDate(d)
 
 	fmt.Println(newDate)
 }

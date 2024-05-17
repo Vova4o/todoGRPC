@@ -7,5 +7,10 @@ import (
 )
 
 func (s *Service) AddTaskService(ctx context.Context, task *models.DBTask) (int64, error) {
-	return 0, nil
+	res, err := s.DB.AddTaskDB(ctx, task)
+	if err != nil {
+		return 0, err
+	}
+	
+	return res, nil
 }

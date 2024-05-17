@@ -59,6 +59,7 @@ func (c *ServerConfig) StartServer() {
 		s := grpc.NewServer()
 		pb.RegisterNextDateServiceServer(s, c.Handler)
 		pb.RegisterAddTaskToDBServiceServer(s, c.Handler)
+		pb.RegisterAllTasksServiceServer(s, c.Handler)
 
 		if err := s.Serve(lis); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
