@@ -7,10 +7,10 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/Vova4o/todogrpc/nextdate/proto"
+	pb "github.com/Vova4o/todogrpc/todoproto/proto"
 )
 
-func NextDate(c pb.NextDateServiceClient) string {
+func NextDate(c pb.TodoProtoServiceClient) string {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -26,7 +26,7 @@ func NextDate(c pb.NextDateServiceClient) string {
 	return res.Date
 }
 
-func AddTask(c pb.AddTaskToDBServiceClient) int64 {
+func AddTask(c pb.TodoProtoServiceClient) int64 {
 	log.Printf("Add task was invoked")
 
 	record := &pb.AddTaskRequest{
@@ -43,13 +43,9 @@ func AddTask(c pb.AddTaskToDBServiceClient) int64 {
 
 	log.Printf("Task has been created: %v\n", res.Id)
 	return res.Id
-	// res, err := c.CreateBlog(context.Background(), blog)
-	// if err != nil {
-	// 	log.Fatalf("Unexpected error: %v\n", err)
-	// }
 }
 
-func AllTasks(c pb.AllTasksServiceClient) {
+func AllTasks(c pb.TodoProtoServiceClient) {
 	log.Printf("All tasks was invoked")
 
 	stream, err := c.AllTasks(context.Background(), &pb.TaskRequest{
@@ -72,7 +68,7 @@ func AllTasks(c pb.AllTasksServiceClient) {
 	}
 }
 
-func AllTasksByName(c pb.AllTasksServiceClient) {
+func AllTasksByName(c pb.TodoProtoServiceClient) {
 	log.Printf("All tasks by Name was invoked")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -98,7 +94,7 @@ func AllTasksByName(c pb.AllTasksServiceClient) {
 	}
 }
 
-func AllTasksByDate(c pb.AllTasksServiceClient) {
+func AllTasksByDate(c pb.TodoProtoServiceClient) {
 	log.Printf("All tasks by Date was invoked")
 
 	stream, err := c.AllTasks(context.Background(), &pb.TaskRequest{

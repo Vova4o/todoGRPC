@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package todoproto;
+
+option go_package = "github.com/Vova4o/todogrpc/todoproto/proto";
+
+message NextDateRequest {
+    string now = 1;
+    string date = 2;
+    string repeat = 3;
+}
+
+message NextDateResponse {
+    string date = 1;
+}
+
+message TaskRequest {
+    string search = 1;
+}
+
+message AllTasksResponse {
+    string id = 1;
+    string title = 2;
+    string comment = 3;
+    string date = 4;
+    string repeat = 5;
+}
+
+message AddTaskRequest {
+    string date = 1;
+    string title = 2;
+    string comment = 3;
+    string repeat = 4;
+}
+
+message AddTaskResponse {
+    int64 id = 1;
+}
+
+service TodoProtoService {
+    rpc NextDate(NextDateRequest) returns (NextDateResponse);
+    rpc AllTasks(TaskRequest) returns (stream AllTasksResponse);
+    rpc AddTask(AddTaskRequest) returns (AddTaskResponse);
+}

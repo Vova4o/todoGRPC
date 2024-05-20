@@ -12,7 +12,7 @@ import (
 	"github.com/Vova4o/todogrpc/internal/database"
 	"github.com/Vova4o/todogrpc/internal/server/handles"
 	"github.com/Vova4o/todogrpc/internal/services"
-	pb "github.com/Vova4o/todogrpc/nextdate/proto"
+	pb "github.com/Vova4o/todogrpc/todoproto/proto"
 
 	// "github.com/Vova4o/todogrpc/internal/server/handles"
 	"google.golang.org/grpc"
@@ -57,9 +57,7 @@ func (c *ServerConfig) StartServer() {
 		}
 
 		s := grpc.NewServer()
-		pb.RegisterNextDateServiceServer(s, c.Handler)
-		pb.RegisterAddTaskToDBServiceServer(s, c.Handler)
-		pb.RegisterAllTasksServiceServer(s, c.Handler)
+		pb.RegisterTodoProtoServiceServer(s, c.Handler)
 
 		if err := s.Serve(lis); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)

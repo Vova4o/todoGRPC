@@ -1,10 +1,10 @@
 package handles
 
 import (
-	pb "github.com/Vova4o/todogrpc/nextdate/proto"
+	pb "github.com/Vova4o/todogrpc/todoproto/proto"
 )
 
-func (h *Handlers) AllTasks(in *pb.TaskRequest, stream pb.AllTasksService_AllTasksServer) error {
+func (h *Handlers) AllTasks(in *pb.TaskRequest, stream pb.TodoProtoService_AllTasksServer) error {
 	tasks, err := h.serviceLevel.AllTasksService(stream.Context(), in.Search)
 	if err != nil {
 		return err

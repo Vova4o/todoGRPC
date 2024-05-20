@@ -37,8 +37,8 @@ else
 endif
 
 .DEFAULT_GOAL := help
-.PHONY: nextdate help
-project := nextdate
+.PHONY: todoproto help
+project := todoproto
 
 all: $(project) ## Generate Pbs and build
 

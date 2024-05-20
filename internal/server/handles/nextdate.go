@@ -6,12 +6,10 @@ import (
 	"log"
 
 	"github.com/Vova4o/todogrpc/internal/models"
-	pb "github.com/Vova4o/todogrpc/nextdate/proto"
+	pb "github.com/Vova4o/todogrpc/todoproto/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-
 
 func (s *Handlers) NextDate(ctx context.Context, in *pb.NextDateRequest) (*pb.NextDateResponse, error) {
 	log.Printf("Received: %v", in)

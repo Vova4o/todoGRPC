@@ -4,14 +4,12 @@ import (
 	"context"
 
 	"github.com/Vova4o/todogrpc/internal/models"
-	pb "github.com/Vova4o/todogrpc/nextdate/proto"
+	pb "github.com/Vova4o/todogrpc/todoproto/proto"
 )
 
 type Handlers struct {
 	// вместо того чтобы впихивать по одному мы воткнули весь инерфейс Proto
-	pb.NextDateServiceServer
-	pb.AddTaskToDBServiceServer
-	pb.AllTasksServiceServer
+	pb.TodoProtoServiceServer
 	// далее прикручиваем структуру слоя сервис к Serviser interface для его использования
 	serviceLevel Serviser
 }
