@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,8 +24,16 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TodoProtoServiceClient interface {
 	NextDate(ctx context.Context, in *NextDateRequest, opts ...grpc.CallOption) (*NextDateResponse, error)
+	//	 {
+	//	    option (google.api.http) = {
+	//	        get: "api/nextdate"
+	//	        body: "*"
+	//	    };
+	//	};
 	AllTasks(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (TodoProtoService_AllTasksClient, error)
 	AddTask(ctx context.Context, in *AddTaskRequest, opts ...grpc.CallOption) (*AddTaskResponse, error)
+	FindId(ctx context.Context, in *FindIdRequest, opts ...grpc.CallOption) (*FindIdResponse, error)
+	DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type todoProtoServiceClient struct {
@@ -85,13 +94,39 @@ func (c *todoProtoServiceClient) AddTask(ctx context.Context, in *AddTaskRequest
 	return out, nil
 }
 
+func (c *todoProtoServiceClient) FindId(ctx context.Context, in *FindIdRequest, opts ...grpc.CallOption) (*FindIdResponse, error) {
+	out := new(FindIdResponse)
+	err := c.cc.Invoke(ctx, "/todoproto.TodoProtoService/FindId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *todoProtoServiceClient) DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/todoproto.TodoProtoService/DeleteTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TodoProtoServiceServer is the server API for TodoProtoService service.
 // All implementations must embed UnimplementedTodoProtoServiceServer
 // for forward compatibility
 type TodoProtoServiceServer interface {
 	NextDate(context.Context, *NextDateRequest) (*NextDateResponse, error)
+	//	 {
+	//	    option (google.api.http) = {
+	//	        get: "api/nextdate"
+	//	        body: "*"
+	//	    };
+	//	};
 	AllTasks(*TaskRequest, TodoProtoService_AllTasksServer) error
 	AddTask(context.Context, *AddTaskRequest) (*AddTaskResponse, error)
+	FindId(context.Context, *FindIdRequest) (*FindIdResponse, error)
+	DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedTodoProtoServiceServer()
 }
 
@@ -107,6 +142,12 @@ func (UnimplementedTodoProtoServiceServer) AllTasks(*TaskRequest, TodoProtoServi
 }
 func (UnimplementedTodoProtoServiceServer) AddTask(context.Context, *AddTaskRequest) (*AddTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddTask not implemented")
+}
+func (UnimplementedTodoProtoServiceServer) FindId(context.Context, *FindIdRequest) (*FindIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindId not implemented")
+}
+func (UnimplementedTodoProtoServiceServer) DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
 }
 func (UnimplementedTodoProtoServiceServer) mustEmbedUnimplementedTodoProtoServiceServer() {}
 
@@ -178,6 +219,42 @@ func _TodoProtoService_AddTask_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TodoProtoService_FindId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodoProtoServiceServer).FindId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/todoproto.TodoProtoService/FindId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodoProtoServiceServer).FindId(ctx, req.(*FindIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TodoProtoService_DeleteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodoProtoServiceServer).DeleteTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/todoproto.TodoProtoService/DeleteTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodoProtoServiceServer).DeleteTask(ctx, req.(*DeleteTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TodoProtoService_ServiceDesc is the grpc.ServiceDesc for TodoProtoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +269,14 @@ var TodoProtoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddTask",
 			Handler:    _TodoProtoService_AddTask_Handler,
+		},
+		{
+			MethodName: "FindId",
+			Handler:    _TodoProtoService_FindId_Handler,
+		},
+		{
+			MethodName: "DeleteTask",
+			Handler:    _TodoProtoService_DeleteTask_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

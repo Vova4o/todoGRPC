@@ -24,10 +24,12 @@ func main() {
 	c := pb.NewTodoProtoServiceClient(conn)
 
 	newDate := handles.NextDate(c)
-	handles.AddTask(c)
+	id := handles.AddTask(c)
 	handles.AllTasks(c)
 	handles.AllTasksByName(c)
 	handles.AllTasksByDate(c)
+	handles.FindTask(c, id)
+	handles.DeleteTask(c, id)
 
 	fmt.Println(newDate)
 }

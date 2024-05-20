@@ -116,3 +116,33 @@ func AllTasksByDate(c pb.TodoProtoServiceClient) {
 		log.Printf("Task: %v\n", res)
 	}
 }
+
+func FindTask(c pb.TodoProtoServiceClient, id int64) {
+	log.Printf("Find task was invoked")
+
+	record := &pb.FindIdRequest{
+		Id: id,
+	}
+
+	res, err := c.FindId(context.Background(), record)
+	if err != nil {
+		log.Fatalf("Unexpected error: %v\n", err)
+	}
+
+	log.Printf("Task: %v\n", res)
+}
+
+func DeleteTask(c pb.TodoProtoServiceClient, id int64) {
+	log.Printf("Delete task was invoked")
+
+	record := &pb.DeleteTaskRequest{
+		Id: id,
+	}
+
+	_, err := c.DeleteTask(context.Background(), record)
+	if err != nil {
+		log.Fatalf("Unexpected error: %v\n", err)
+	}
+
+	log.Printf("Task has been deleted\n")
+}

@@ -3,6 +3,7 @@ module github.com/Vova4o/todogrpc
 go 1.22.1
 
 require (
+	github.com/golang/protobuf v1.5.4
 	github.com/labstack/gommon v0.4.2
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/spf13/pflag v1.0.5
@@ -30,10 +31,11 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
+	golang.org/x/text v0.15.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240515191416-fc5f0ca64291 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

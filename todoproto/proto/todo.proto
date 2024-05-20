@@ -4,6 +4,8 @@ package todoproto;
 
 option go_package = "github.com/Vova4o/todogrpc/todoproto/proto";
 
+import "google/protobuf/empty.proto";
+
 message NextDateRequest {
     string now = 1;
     string date = 2;
@@ -37,8 +39,32 @@ message AddTaskResponse {
     int64 id = 1;
 }
 
+message FindIdRequest {
+    int64 id = 1;
+}
+
+message FindIdResponse {
+    string id = 1;
+    string title = 2;
+    string comment = 3;
+    string date = 4;
+    string repeat = 5;
+}
+
+message DeleteTaskRequest {
+    int64 id = 1;
+}
+
 service TodoProtoService {
     rpc NextDate(NextDateRequest) returns (NextDateResponse);
+    //  {
+    //     option (google.api.http) = {
+    //         get: "api/nextdate"
+    //         body: "*"
+    //     };
+    // };
     rpc AllTasks(TaskRequest) returns (stream AllTasksResponse);
-    rpc AddTask(AddTaskRequest) returns (AddTaskResponse);
+    rpc AddTask(AddTaskRequest) returns (AddTaskResponse) ;
+    rpc FindId(FindIdRequest) returns (FindIdResponse);
+    rpc DeleteTask(DeleteTaskRequest) returns (google.protobuf.Empty);
 }

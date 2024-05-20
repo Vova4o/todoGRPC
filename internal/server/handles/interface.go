@@ -19,6 +19,8 @@ type Serviser interface {
 	NextDateRequest(nowRequest string, task models.DBTask) (string, error)
 	AddTaskService(ctx context.Context, task *models.DBTask) (int64, error)
 	AllTasksService(ctx context.Context, in string) ([]models.DBTask, error)
+	FindTaskById(ctx context.Context, id int64) (*models.DBTask, error)
+	DeleteTaskService(ctx context.Context, id int64) error
 	Close() string
 }
 
