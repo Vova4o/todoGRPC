@@ -14,6 +14,8 @@ func (s *Service) NextDateRequest(nowRequest string, task models.DBTask) (string
 		return "", err
 	}
 
+	//надо делать всю проверку на корректность данных в сервисе
+
 	newDate, err := datecalc.NextDate(timeNow, task.Date, task.Repeat)
 	if err != nil {
 		return "", err
